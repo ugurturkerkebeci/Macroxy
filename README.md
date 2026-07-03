@@ -83,14 +83,14 @@ Don't want to deal with source code, Python installations, dependencies, or term
 You can download the latest compiled version of **Macroxy** directly from the repository's **Releases** page.
 
 1. Open the **Releases** section.
-2. Download the latest **Macroxy_Setup.exe** or portable executable package.
+2. Download the latest **Macroxy.exe** or portable executable package.
 3. Launch the executable and start using Macroxy immediately.
 
 ✅ No Python installation required
 ✅ No dependency management required
 ✅ Ready to use out of the box
 
-> **Download:** `Releases → Latest Release → Macroxy_Setup.exe`
+> **Download:** `Releases → Latest Release → Macroxy.exe`
 
 ---
 
@@ -273,14 +273,14 @@ Kaynak kodlarla, Python kurulumlarıyla, bağımlılıklarla veya terminal komut
 **Macroxy**'nin derlenmiş en güncel sürümünü doğrudan **Releases** bölümünden indirebilirsiniz.
 
 1. Deponun **Releases** bölümüne gidin.
-2. En güncel **Macroxy_Setup.exe** veya taşınabilir sürümü indirin.
+2. En güncel **Macroxy.exe** veya taşınabilir sürümü indirin.
 3. Dosyayı çalıştırın ve Macroxy'yi hemen kullanmaya başlayın.
 
 ✅ Python kurulumu gerekmez
 ✅ Ek bağımlılık yüklemesi gerekmez
 ✅ İndirip anında kullanmaya başlayabilirsiniz
 
-> **İndirme:** `Releases → Latest Release → Macroxy_Setup.exe`
+> **İndirme:** `Releases → Latest Release → Macroxy.exe`
 
 ---
 
