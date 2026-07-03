@@ -4,6 +4,8 @@
 
 ### Gelişmiş Masaüstü Otomasyon ve Makro Kaydedici Sistemi
 
+<img src="https://raw.githubusercontent.com/ugurturkerkebeci/Macroxy/refs/heads/main/icon.ico">
+
 <p align="center">
   <strong>Developed by Uğur Türker Kebeci (@ugurturkerkebeci)</strong>
 </p>
