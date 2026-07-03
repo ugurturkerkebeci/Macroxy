@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macroxy - Tactical Automation Terminal</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Main Script -->
+    <script defer src="js/main.js"></script>
+</head>
+<body class="tactical-theme">
+    <!-- Boot Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-content">
+            <div class="tactical-logo">
+                <img src="img/logo.png" alt="Macroxy Crocodile Logo" class="logo-image">
+            </div>
+            <div class="boot-loader">
+                <div class="boot-text" id="bootText"></div>
+                <div class="boot-bar"><div class="boot-progress" id="bootProgress"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-wrapper">
+        <!-- Grid pattern overlay -->
+        <div class="grid-overlay"></div>
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <img src="img/logo.png" alt="Macroxy Crocodile Logo" class="logo-image-header">
+                </div>
+                <h1>MACROXY<span>//_SYS.v1.2</span></h1>
+            </div>
+            
+            <div class="header-controls">
+                <div class="status-indicator" id="appStatus">
+                    <span class="status-tag">STATUS:</span>
+                    <span class="status-text" data-localize="statusIdle">STANDBY</span>
+                    <span class="status-dot"></span>
+                </div>
+                
+                <div class="lang-selector">
+                    <button class="lang-btn active" id="langEn" onclick="setLanguage('en')">EN</button>
+                    <button class="lang-btn" id="langTr" onclick="setLanguage('tr')">TR</button>
+                </div>
+                
+                <button class="icon-btn" onclick="toggleHelpModal()" id="helpBtn" title="Help / Guide">
+                    <span class="btn-char">?</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="main-content">
+            <!-- Left Side: Controls & Config -->
+            <section class="control-panel">
+                <!-- Main Action Buttons -->
+                <div class="card main-actions">
+                    <div class="card-header">
+                        <div class="header-dot"></div>
+                        <h2 data-localize="controlsTitle">TACTICAL CONTROLS</h2>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <!-- Record Button -->
+                        <button id="recordBtn" class="btn btn-record" onclick="toggleRecording()">
+                            <span class="btn-glow"></span>
+                            <span class="btn-text" data-localize="record">RECORD</span>
+                        </button>
+                        
+                        <!-- Play Button -->
+                        <button id="playBtn" class="btn btn-play" onclick="togglePlayback()">
+                            <span class="btn-glow"></span>
+                            <span class="btn-text" data-localize="play">PLAYBACK</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Settings & Configuration -->
+                <div class="card config-panel">
+                    <div class="card-header">
+                        <div class="header-dot"></div>
+                        <h2 data-localize="settingsTitle">PARAMETER CONFIG</h2>
+                    </div>
+                    
+                    <!-- Record Mouse Movements Toggle -->
+                    <div class="config-toggle-group">
+                        <div class="toggle-label-wrap">
+                            <span class="toggle-title" data-localize="recordMouseLabel">Record Hover Moves</span>
+                            <span class="toggle-desc" data-localize="recordMouseDesc">Turn off for clean, click-only macros</span>
+                        </div>
+                        <label class="tactical-switch">
+                            <input type="checkbox" id="recordMouseMovesInput" checked>
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Delay Override Mode -->
+                    <div class="input-group">
+                        <label for="delayModeSelect">
+                            <span data-localize="delayModeLabel">Delay Calculation</span>
+                        </label>
+                        <select id="delayModeSelect" class="tactical-select" onchange="toggleFixedDelayInput()">
+                            <option value="original" data-localize="delayOptOriginal">Original Recorded Delays</option>
+                            <option value="fixed" data-localize="delayOptFixed">Fixed Intervals</option>
+                        </select>
+                    </div>
+
+                    <!-- Fixed Delay Value (Shown only when Fixed selected) -->
+                    <div class="input-group" id="fixedDelayInputGroup" style="display: none;">
+                        <label for="fixedDelayInput">
+                            <span data-localize="fixedDelayLabel">Fixed Inter-Delay (ms)</span>
+                        </label>
+                        <input type="number" id="fixedDelayInput" class="tactical-input" min="5" value="100">
+                    </div>
+
+                    <!-- Playback Speed Multiplier -->
+                    <div class="input-group" id="speedSliderGroup">
+                        <label for="speedRange">
+                            <span data-localize="speedLabel">Playback Speed</span>
+                            <span id="speedValueTag" class="value-badge">1.0x</span>
+                        </label>
+                        <input type="range" id="speedRange" class="tactical-slider" min="0" max="6" step="1" value="2" oninput="updateSpeedBadge(this.value)">
+                        <div class="slider-marks">
+                            <span>0.5x</span>
+                            <span>1x</span>
+                            <span>2x</span>
+                            <span>Instant</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Loop Control -->
+                    <div class="input-group">
+                        <label for="loopCountInput">
+                            <span data-localize="loopCountLabel">Loop Repeats</span>
+                            <span class="info-tag" data-localize="loopCountDesc">(0 = Continuous)</span>
+                        </label>
+                        <div class="number-input-wrapper">
+                            <button class="num-btn" onclick="adjustLoop(-1)">-</button>
+                            <input type="number" id="loopCountInput" class="num-val" min="0" value="1">
+                            <button class="num-btn" onclick="adjustLoop(1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hotkeys Configurations -->
+                    <div class="hotkeys-container">
+                        <!-- Record Toggle Hotkey -->
+                        <div class="input-group font-mono">
+                            <label>
+                                <span data-localize="recordHotkeyLabel">Record Hotkey</span>
+                            </label>
+                            <button id="recordHotkeyBtn" class="hotkey-selector-btn" onclick="startHotkeyCapture('record')">
+                                CTRL+ALT+R
+                            </button>
+                        </div>
+                        
+                        <!-- Emergency Stop Hotkey -->
+                        <div class="input-group font-mono">
+                            <label>
+                                <span data-localize="stopHotkeyLabel">Emergency Stop Key</span>
+                            </label>
+                            <button id="hotkeyBtn" class="hotkey-selector-btn" onclick="startHotkeyCapture('stop')">
+                                ESC
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save current macro -->
+                <div class="card save-panel" id="saveCard" style="display: none;">
+                    <div class="card-header">
+                        <div class="header-dot"></div>
+                        <h2 data-localize="saveMacroTitle">COMMIT MACRO</h2>
+                    </div>
+                    <div class="save-form">
+                        <input type="text" id="macroNameInput" class="tactical-input" placeholder="MACRO_NAME" data-placeholder-localize="macroNamePlaceholder">
+                        <button class="btn btn-primary" onclick="saveCurrentMacro()" data-localize="saveBtn">COMMIT TO STORAGE</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Side: Action timeline -->
+            <section class="timeline-panel">
+                <div class="card timeline-card">
+                    <div class="card-header">
+                        <div class="header-dot"></div>
+                        <h2 data-localize="timelineTitle">EVENT FEED CONSOLE</h2>
+                        <div class="timeline-actions">
+                            <span id="eventCountTag" class="badge">0 <span data-localize="eventsCountLabel">EVT</span></span>
+                            <button id="clearTimelineBtn" class="text-btn" onclick="clearTimeline()" data-localize="clearBtn" style="display: none;">[WIPE]</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Event Feed -->
+                    <div class="timeline-feed" id="timelineFeed">
+                        <div class="empty-state" id="emptyTimelineState">
+                            <div class="empty-icon font-mono">
+                                [ SYSTEM STACK EMPTY ]
+                            </div>
+                            <p data-localize="noEventsText">Awaiting command. Press record hotkey to capture mouse actions, key strikes, or window focuses.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Saved Macros Library Section -->
+        <section class="library-section">
+            <div class="card library-card">
+                <div class="card-header">
+                    <div class="header-dot"></div>
+                    <h2 data-localize="libraryTitle">MACRO STORAGE BANKS</h2>
+                </div>
+                <div class="library-grid" id="libraryGrid">
+                    <!-- Dynamic List of Saved Macros -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Help/About Modal -->
+    <div class="modal-backdrop" id="helpModal" onclick="closeHelpModalOutside(event)">
+        <div class="modal card">
+            <div class="modal-header">
+                <div class="header-dot"></div>
+                <h2 data-localize="helpTitle">Macroxy Operations Panel</h2>
+                <button class="close-btn" onclick="toggleHelpModal()">&times;</button>
+            </div>
+            
+            <!-- Modal Tabs -->
+            <div class="modal-tabs">
+                <button class="modal-tab-btn active" id="tabBtnGuide" onclick="switchModalTab('guide')" data-localize="tabGuide">OPERATIONS GUIDE</button>
+                <button class="modal-tab-btn" id="tabBtnAbout" onclick="switchModalTab('about')" data-localize="tabAbout">ABOUT SYSTEM</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Guide Tab Content -->
+                <div id="modalTabGuide" class="modal-tab-content">
+                    <div class="help-section">
+                        <h3 data-localize="helpRecordTitle">1. Recording Macros</h3>
+                        <p data-localize="helpRecordText">Click the red <strong>Record</strong> button or press your global Record Hotkey. The app window will focus out and start capturing all your mouse clicks, scrolls, keyboard inputs, and active window changes. Press the global Record Hotkey again to stop recording.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3 data-localize="helpPlayTitle">2. Replaying Macros</h3>
+                        <p data-localize="helpPlayText">Once recorded, you can specify speed multipliers (0.5x up to Instant) or fixed delays (e.g. 100ms between actions). Select the loop count and click <strong>Play</strong>. Press the <strong>Emergency Stop Key</strong> (Default: ESC) to abort playback instantly from any screen.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3 data-localize="helpHotkeyTitle">3. Customizing Hotkeys</h3>
+                        <p data-localize="helpHotkeyText">Click on the Hotkey buttons in settings. Press any key combination (like Ctrl+Shift+S or F12) to bind it as the new trigger. Bindings are saved globally.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3 data-localize="helpSaveTitle">4. Macro Storage</h3>
+                        <p data-localize="helpSaveText">Save your timeline macros using name keys. Loaded files instantly update your active event feed ready for playback or loop adjustments.</p>
+                    </div>
+                </div>
+
+                <!-- About Tab Content -->
+                <div id="modalTabAbout" class="modal-tab-content" style="display: none;">
+                    <div class="about-container">
+                        <div class="about-field">
+                            <span class="about-label" data-localize="developerLabel">Developer:</span>
+                            <span class="about-value">Uğur Türker Kebeci</span>
+                        </div>
+                        <div class="about-field">
+                            <span class="about-label" data-localize="licenseLabel">License:</span>
+                            <span class="about-value">MIT Open Source</span>
+                        </div>
+                        <p class="about-desc" data-localize="aboutDesc">Macroxy is a high-precision macro automation utility developed by Uğur Türker Kebeci. Released as open source under the MIT License, compatible with Windows 7 and above.</p>
+                        
+                        <!-- Github Button -->
+                        <button class="btn btn-primary github-btn" onclick="openGithub()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.646.64.699 1.026 1.592 1.026 2.683 0 3.842-2.337 4.687-4.565 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.138 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path>
+                            </svg>
+                            <span data-localize="githubBtnText">GITHUB PROFILE</span>
+                        </button>
+
+                        <div class="license-copy font-mono">
+                            <div class="license-header">MIT LICENSE</div>
+                            <div class="license-text">
+Copyright (c) 2026 Uğur Türker Kebeci
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="appToast">
+        <span class="toast-message"></span>
+    </div>
+</body>
+</html>
